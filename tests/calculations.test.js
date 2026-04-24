@@ -48,7 +48,7 @@ describe('calculateDrillingMetrics', () => {
 });
 
 describe('calculateTremieMetrics', () => {
-  it('computes concrete level and acceptable embedment', () => {
+  it('computes tremie position from platform reference and lift height', () => {
     const result = calculateTremieMetrics({
       pileDiameter: 1.2,
       boreDepth: 32,
@@ -62,35 +62,38 @@ describe('calculateTremieMetrics', () => {
     expect(result.tremieLength).toBe(9.5);
     expect(result.concreteHeight).toBeCloseTo(15.92, 2);
     expect(result.concreteElevation).toBeCloseTo(-10.08, 2);
-    expect(result.tremieTipDepth).toBeCloseTo(30.1, 2);
-    expect(result.embedmentDepth).toBeCloseTo(14.02, 2);
-    expect(result.embedmentStatus).toBe('too_deep');
+    expect(result.tremieTopElevation).toBeCloseTo(7.5, 2);
+    expect(result.tremieTipDepth).toBeCloseTo(8, 2);
+    expect(result.tremieTipElevation).toBeCloseTo(-2, 2);
+    expect(result.currentBottomOffset).toBeCloseTo(24, 2);
+    expect(result.embedmentDepth).toBeCloseTo(-8.08, 2);
+    expect(result.embedmentStatus).toBe('out_of_concrete');
   });
 
-  it('classifies insufficient and out-of-concrete states', () => {
+  it('classifies insufficient and too-deep states', () => {
     expect(
       calculateTremieMetrics({
         pileDiameter: 1,
         boreDepth: 20,
         platformElevation: 5,
-        tremieSegments: [1, 3, 3],
+        tremieSegments: [1, 3, 3, 2, 2],
         bottomOffset: 0.4,
-        concreteVolume: 0.2,
-        liftHeight: 0.2,
+        concreteVolume: 8,
+        liftHeight: 0,
       }).embedmentStatus
-    ).toBe('out_of_concrete');
+    ).toBe('insufficient');
 
     expect(
       calculateTremieMetrics({
         pileDiameter: 1,
         boreDepth: 20,
         platformElevation: 5,
-        tremieSegments: [1, 3, 3, 3, 3],
+        tremieSegments: [1, 3, 3, 3, 3, 2, 2],
         bottomOffset: 0.4,
         concreteVolume: 8,
-        liftHeight: 8.6,
+        liftHeight: 0,
       }).embedmentStatus
-    ).toBe('insufficient');
+    ).toBe('too_deep');
   });
 
   it('uses the configured tremie length when drawing the diagram', () => {
@@ -111,7 +114,7 @@ describe('calculateTremieMetrics', () => {
     const shortGeometry = getTremieDiagramGeometry(shortInputs, calculateTremieMetrics(shortInputs));
     const longGeometry = getTremieDiagramGeometry(longInputs, calculateTremieMetrics(longInputs));
 
-    expect(longGeometry.yTremieTop).toBeLessThan(shortGeometry.yTremieTop);
-    expect(longGeometry.yTip).toBeCloseTo(shortGeometry.yTip, 2);
+    expect(longGeometry.yTremieTop).toBeCloseTo(shortGeometry.yTremieTop, 2);
+    expect(longGeometry.yTip).toBeGreaterThan(shortGeometry.yTip);
   });
 });

@@ -9,7 +9,7 @@ const baseFields = [
   ['pileDiameter', '桩径 (m)'],
   ['boreDepth', '成孔深度 (m)'],
   ['platformElevation', '平台标高 (m)'],
-  ['bottomOffset', '导管底距孔底距离 (m)'],
+  ['bottomOffset', '导管底距孔底参考值 (m)'],
   ['concreteVolume', '已灌混凝土方量 (m³)'],
   ['liftHeight', '提管高度 (m)'],
 ];
@@ -78,7 +78,9 @@ export function TremiePlacementPage() {
         <div>
           <p className="page-eyebrow">页面二</p>
           <h2>导管提管与混凝土灌注模拟</h2>
-          <p className="page-description">动态调整导管组合、混凝土方量和提管高度，实时查看混凝土面与埋深状态。</p>
+          <p className="page-description">
+            以平台线作为导管顶端基准，动态调整导管组合、混凝土方量和提管高度，实时查看导管底端位置、混凝土面和埋深状态。
+          </p>
         </div>
         <div className="status-pill status-neutral">{statusMap[metrics.embedmentStatus]}</div>
       </header>
@@ -149,9 +151,12 @@ export function TremiePlacementPage() {
           <h3>计算结果</h3>
           <div className="metric-grid">
             <MetricCard label="导管总长" value={`${formatNumber(metrics.tremieLength)} m`} />
+            <MetricCard label="导管顶端标高" value={`${formatNumber(metrics.tremieTopElevation)} m`} />
+            <MetricCard label="导管底端标高" value={`${formatNumber(metrics.tremieTipElevation)} m`} />
+            <MetricCard label="当前底距孔底" value={`${formatNumber(metrics.currentBottomOffset)} m`} />
+            <MetricCard label="参考底距孔底" value={`${formatNumber(metrics.referenceBottomOffset)} m`} />
             <MetricCard label="混凝土面高度" value={`${formatNumber(metrics.concreteHeight)} m`} />
             <MetricCard label="混凝土面标高" value={`${formatNumber(metrics.concreteElevation)} m`} />
-            <MetricCard label="导管底端位置" value={`${formatNumber(metrics.tremieTipElevation)} m`} />
             <MetricCard label="导管埋深" value={`${formatNumber(metrics.embedmentDepth)} m`} />
           </div>
         </div>

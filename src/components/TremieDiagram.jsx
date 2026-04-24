@@ -6,8 +6,7 @@ const VIEWBOX_HEIGHT = 760;
 export function getTremieDiagramGeometry(inputs, metrics) {
   const platformElevation = Number(inputs.platformElevation) || 0;
   const boreDepth = Number(inputs.boreDepth) || 0;
-  const tremieTopElevation = metrics.tremieTipElevation + metrics.tremieLength;
-  const topElevation = Math.max(platformElevation + 1, tremieTopElevation + 1);
+  const topElevation = Math.max(platformElevation + 1, metrics.tremieTopElevation + 1);
   const bottomElevation = platformElevation - boreDepth - 1;
   const totalRange = Math.max(topElevation - bottomElevation, 1);
   const scaleY = (elevation) => 60 + ((topElevation - elevation) / totalRange) * 620;
@@ -19,7 +18,7 @@ export function getTremieDiagramGeometry(inputs, metrics) {
     yBottom: scaleY(platformElevation - boreDepth),
     yConcrete: scaleY(metrics.concreteElevation),
     yTip: scaleY(metrics.tremieTipElevation),
-    yTremieTop: scaleY(tremieTopElevation),
+    yTremieTop: scaleY(metrics.tremieTopElevation),
   };
 }
 

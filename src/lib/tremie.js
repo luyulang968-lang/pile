@@ -23,9 +23,10 @@ export function calculateTremieMetrics(input) {
   const concreteHeight = pileArea > 0 ? concreteVolume / pileArea : 0;
   const concreteElevation = platformElevation - boreDepth + concreteHeight;
   const tremieLength = tremieSegments.reduce((sum, item) => sum + item, 0);
-  const initialTipDepth = Math.max(boreDepth - bottomOffset, 0);
-  const tremieTipDepth = Math.max(initialTipDepth - liftHeight, 0);
-  const tremieTipElevation = platformElevation - tremieTipDepth;
+  const tremieTopElevation = platformElevation + liftHeight;
+  const tremieTipElevation = tremieTopElevation - tremieLength;
+  const tremieTipDepth = platformElevation - tremieTipElevation;
+  const currentBottomOffset = boreDepth - tremieTipDepth;
   const embedmentDepth = concreteElevation - tremieTipElevation;
 
   let embedmentStatus = 'acceptable';
@@ -39,11 +40,14 @@ export function calculateTremieMetrics(input) {
 
   return {
     tremieSegments,
+    referenceBottomOffset: roundToTwo(bottomOffset),
     tremieLength: roundToTwo(tremieLength),
     concreteHeight: roundToTwo(concreteHeight),
     concreteElevation: roundToTwo(concreteElevation),
+    tremieTopElevation: roundToTwo(tremieTopElevation),
     tremieTipDepth: roundToTwo(tremieTipDepth),
     tremieTipElevation: roundToTwo(tremieTipElevation),
+    currentBottomOffset: roundToTwo(currentBottomOffset),
     embedmentDepth: roundToTwo(embedmentDepth),
     embedmentStatus,
   };
