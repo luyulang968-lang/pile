@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { calculateDrillingMetrics } from '../src/lib/drilling';
 import { calculateTremieMetrics } from '../src/lib/tremie';
+import { getTremieDiagramGeometry } from '../src/components/TremieDiagram';
 
 describe('calculateDrillingMetrics', () => {
   it('computes toe progress and status', () => {
@@ -90,5 +91,27 @@ describe('calculateTremieMetrics', () => {
         liftHeight: 8.6,
       }).embedmentStatus
     ).toBe('insufficient');
+  });
+
+  it('uses the configured tremie length when drawing the diagram', () => {
+    const shortInputs = {
+      pileDiameter: 1.2,
+      boreDepth: 32,
+      platformElevation: 6,
+      tremieSegments: [1, 3, 3],
+      bottomOffset: 0.4,
+      concreteVolume: 18,
+      liftHeight: 1.5,
+    };
+    const longInputs = {
+      ...shortInputs,
+      tremieSegments: [1, 3, 3, 2, 2],
+    };
+
+    const shortGeometry = getTremieDiagramGeometry(shortInputs, calculateTremieMetrics(shortInputs));
+    const longGeometry = getTremieDiagramGeometry(longInputs, calculateTremieMetrics(longInputs));
+
+    expect(longGeometry.yTremieTop).toBeLessThan(shortGeometry.yTremieTop);
+    expect(longGeometry.yTip).toBeCloseTo(shortGeometry.yTip, 2);
   });
 });

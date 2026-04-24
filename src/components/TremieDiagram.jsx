@@ -3,23 +3,56 @@ import { formatNumber } from '../lib/format';
 const VIEWBOX_WIDTH = 280;
 const VIEWBOX_HEIGHT = 760;
 
-export function TremieDiagram({ inputs, metrics }) {
+export function getTremieDiagramGeometry(inputs, metrics) {
   const platformElevation = Number(inputs.platformElevation) || 0;
   const boreDepth = Number(inputs.boreDepth) || 0;
-  const topElevation = platformElevation + 1;
+  const tremieTopElevation = metrics.tremieTipElevation + metrics.tremieLength;
+  const topElevation = Math.max(platformElevation + 1, tremieTopElevation + 1);
   const bottomElevation = platformElevation - boreDepth - 1;
   const totalRange = Math.max(topElevation - bottomElevation, 1);
   const scaleY = (elevation) => 60 + ((topElevation - elevation) / totalRange) * 620;
-  const yPlatform = scaleY(platformElevation);
-  const yBottom = scaleY(platformElevation - boreDepth);
-  const yConcrete = scaleY(metrics.concreteElevation);
-  const yTip = scaleY(metrics.tremieTipElevation);
+
+  return {
+    platformElevation,
+    boreDepth,
+    yPlatform: scaleY(platformElevation),
+    yBottom: scaleY(platformElevation - boreDepth),
+    yConcrete: scaleY(metrics.concreteElevation),
+    yTip: scaleY(metrics.tremieTipElevation),
+    yTremieTop: scaleY(tremieTopElevation),
+  };
+}
+
+export function TremieDiagram({ inputs, metrics }) {
+  const { platformElevation, boreDepth, yPlatform, yBottom, yConcrete, yTip, yTremieTop } =
+    getTremieDiagramGeometry(inputs, metrics);
 
   return (
-    <svg className="diagram-svg" viewBox={`0 0 ${VIEWBOX_WIDTH} ${VIEWBOX_HEIGHT}`} role="img" aria-label="导管灌注示意图">
+    <svg
+      className="diagram-svg"
+      viewBox={`0 0 ${VIEWBOX_WIDTH} ${VIEWBOX_HEIGHT}`}
+      role="img"
+      aria-label="导管灌注示意图"
+    >
       <rect x="84" y="40" width="112" height="660" rx="24" fill="#f6fbf8" stroke="#cbd9d2" />
-      <rect x="106" y={yConcrete} width="68" height={Math.max(yBottom - yConcrete, 0)} rx="20" fill="#d1612f" opacity="0.9" />
-      <rect x="132" y="70" width="16" height={Math.max(yTip - 70, 10)} rx="8" fill="#435965" />
+      <rect
+        x="106"
+        y={yConcrete}
+        width="68"
+        height={Math.max(yBottom - yConcrete, 0)}
+        rx="20"
+        fill="#d1612f"
+        opacity="0.9"
+      />
+      <rect
+        x="132"
+        y={yTremieTop}
+        width="16"
+        height={Math.max(yTip - yTremieTop, 10)}
+        rx="8"
+        fill="#435965"
+        data-testid="tremie-body"
+      />
       <circle cx="140" cy={yTip} r="12" fill="#435965" />
 
       <line x1="40" y1={yPlatform} x2="240" y2={yPlatform} stroke="#1b4332" strokeWidth="3" strokeDasharray="10 6" />
