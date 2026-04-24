@@ -272,6 +272,24 @@ input {
   margin-top: 0.9rem;
 }
 
+.pull-panel {
+  margin-top: 1rem;
+  display: grid;
+  gap: 0.65rem;
+}
+
+.pull-label {
+  color: #546760;
+  font-size: 0.92rem;
+  font-weight: 600;
+}
+
+.pull-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.65rem;
+}
+
 .action-button,
 .icon-button {
   border: 0;

@@ -12,3 +12,16 @@ test('adds tremie segments and updates embedment status', async () => {
   expect(screen.getAllByLabelText(/导管节段长度/)).toHaveLength(6);
   expect(screen.getByText(/Embedment/)).toBeInTheDocument();
 });
+
+test('pull operation raises the tremie and updates lift height', async () => {
+  const user = userEvent.setup();
+  render(<TremiePlacementPage />);
+
+  const [liftHeightInput] = screen.getAllByLabelText('提管高度 (m)');
+  expect(liftHeightInput).toHaveValue('1.5');
+
+  const [pullButton] = screen.getAllByRole('button', { name: '提管 1.0 m' });
+  await user.click(pullButton);
+
+  expect(liftHeightInput).toHaveValue('2.50');
+});

@@ -21,6 +21,8 @@ const statusMap = {
   out_of_concrete: 'Tremie out of concrete',
 };
 
+const pullSteps = [0.5, 1, 2];
+
 export function TremiePlacementPage() {
   const [inputs, setInputs] = usePersistentPageState(tremieAdapter, tremieDefaults);
   const metrics = calculateTremieMetrics(inputs);
@@ -60,6 +62,16 @@ export function TremiePlacementPage() {
     });
   };
 
+  const pullTremie = (step) => {
+    setInputs((current) => {
+      const nextLiftHeight = (Number(current.liftHeight) || 0) + step;
+      return {
+        ...current,
+        liftHeight: nextLiftHeight.toFixed(2),
+      };
+    });
+  };
+
   return (
     <section className="page">
       <header className="page-header">
@@ -95,6 +107,23 @@ export function TremiePlacementPage() {
               新增导管节段
             </button>
           </div>
+
+          <div className="pull-panel">
+            <span className="pull-label">提管操作</span>
+            <div className="pull-actions">
+              {pullSteps.map((step) => (
+                <button
+                  key={step}
+                  type="button"
+                  className="icon-button"
+                  onClick={() => pullTremie(step)}
+                >
+                  {`提管 ${step.toFixed(1)} m`}
+                </button>
+              ))}
+            </div>
+          </div>
+
           <div className="segment-list">
             {inputs.tremieSegments.map((segment, index) => (
               <div key={`${index}-${segment}`} className="segment-item">
@@ -109,7 +138,7 @@ export function TremiePlacementPage() {
                   />
                 </label>
                 <button type="button" className="icon-button" onClick={() => removeSegment(index)}>
-                  删除
+                  删除节段
                 </button>
               </div>
             ))}
